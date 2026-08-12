@@ -1,0 +1,258 @@
+{
+  "workshop_calendar": [
+    {
+      "date": "2026-08-10",
+      "day": "Monday",
+      "working_hours": "09:00 - 18:00",
+      "slots": [
+        {
+          "slot_id": "SLOT9001",
+          "date": "2026-08-10",
+          "time": "09:00 AM",
+          "status": "booked",
+          "bay": "Bay 1",
+          "booking_id": "BOOK7504"
+        },
+        {
+          "slot_id": "SLOT9002",
+          "date": "2026-08-10",
+          "time": "10:30 AM",
+          "status": "booked",
+          "bay": "Bay 2",
+          "technician": "Ramesh Kumar",
+          "booking_id": "BOOK7001"
+        },
+        {
+          "slot_id": "SLOT9003",
+          "date": "2026-08-10",
+          "time": "12:00 PM",
+          "status": "available",
+          "bay": "Bay 3"
+        },
+        {
+          "slot_id": "SLOT9004",
+          "date": "2026-08-10",
+          "time": "02:00 PM",
+          "status": "available",
+          "bay": "Bay 1"
+        },
+        {
+          "slot_id": "SLOT9005",
+          "date": "2026-08-10",
+          "time": "04:00 PM",
+          "status": "blocked",
+          "bay": "Bay 2"
+        }
+      ]
+    },
+    {
+      "date": "2026-08-11",
+      "day": "Tuesday",
+      "working_hours": "09:00 - 18:00",
+      "slots": [
+        {
+          "slot_id": "SLOT9006",
+          "date": "2026-08-11",
+          "time": "09:00 AM",
+          "status": "booked",
+          "bay": "Bay 1",
+          "booking_id": "BOOK7506"
+        },
+        {
+          "slot_id": "SLOT9007",
+          "date": "2026-08-11",
+          "time": "10:00 AM",
+          "status": "available",
+          "bay": "Bay 2"
+        },
+        {
+          "slot_id": "SLOT9008",
+          "date": "2026-08-11",
+          "time": "11:30 AM",
+          "status": "booked",
+          "bay": "Bay 3",
+          "technician": "Suresh Patel",
+          "booking_id": "BOOK7002"
+        },
+        {
+          "slot_id": "SLOT9009",
+          "date": "2026-08-11",
+          "time": "01:30 PM",
+          "status": "available",
+          "bay": "Bay 1"
+        },
+        {
+          "slot_id": "SLOT9010",
+          "date": "2026-08-11",
+          "time": "03:30 PM",
+          "status": "available",
+          "bay": "Bay 3"
+        }
+      ]
+    },
+    {
+      "date": "2026-08-12",
+      "day": "Wednesday",
+      "working_hours": "09:00 - 18:00",
+      "slots": [
+        {
+          "slot_id": "SLOT9011",
+          "date": "2026-08-12",
+          "time": "09:30 AM",
+          "status": "booked",
+          "bay": "Bay 2",
+          "booking_id": "BOOK7508"
+        },
+        {
+          "slot_id": "SLOT9012",
+          "date": "2026-08-12",
+          "time": "11:00 AM",
+          "status": "booked",
+          "bay": "Bay 1",
+          "booking_id": "BOOK7510"
+        },
+        {
+          "slot_id": "SLOT9013",
+          "date": "2026-08-12",
+          "time": "12:30 PM",
+          "status": "booked",
+          "bay": "Bay 3",
+          "booking_id": "BOOK7509"
+        },
+        {
+          "slot_id": "SLOT9014",
+          "date": "2026-08-12",
+          "time": "02:30 PM",
+          "status": "booked",
+          "bay": "Bay 2",
+          "technician": "Ramesh Kumar",
+          "booking_id": "BOOK7003"
+        },
+        {
+          "slot_id": "SLOT9015",
+          "date": "2026-08-12",
+          "time": "04:30 PM",
+          "status": "booked",
+          "bay": "Bay 1",
+          "booking_id": "BOOK7507"
+        }
+      ]
+    },
+    {
+      "date": "2026-08-13",
+      "day": "Thursday",
+      "working_hours": "09:00 - 18:00",
+      "slots": [
+        {
+          "slot_id": "SLOT9016",
+          "date": "2026-08-13",
+          "time": "09:00 AM",
+          "status": "available",
+          "bay": "Bay 1"
+        },
+        {
+          "slot_id": "SLOT9017",
+          "date": "2026-08-13",
+          "time": "10:30 AM",
+          "status": "available",
+          "bay": "Bay 2"
+        },
+        {
+          "slot_id": "SLOT9018",
+          "date": "2026-08-13",
+          "time": "01:00 PM",
+          "status": "available",
+          "bay": "Bay 3"
+        },
+        {
+          "slot_id": "SLOT9019",
+          "date": "2026-08-13",
+          "time": "03:00 PM",
+          "status": "booked",
+          "bay": "Bay 1",
+          "booking_id": "BOOK7511"
+        }
+      ]
+    },
+    {
+      "date": "2026-08-14",
+      "day": "Friday",
+      "working_hours": "09:00 - 18:00",
+      "slots": [
+        {
+          "slot_id": "SLOT9020",
+          "date": "2026-08-14",
+          "time": "09:00 AM",
+          "status": "booked",
+          "bay": "Bay 2",
+          "booking_id": "BOOK7505"
+        },
+        {
+          "slot_id": "SLOT9021",
+          "date": "2026-08-14",
+          "time": "11:00 AM",
+          "status": "booked",
+          "bay": "Bay 1",
+          "technician": "Suresh Patel",
+          "booking_id": "BOOK7004"
+        },
+        {
+          "slot_id": "SLOT9022",
+          "date": "2026-08-14",
+          "time": "01:30 PM",
+          "status": "available",
+          "bay": "Bay 3"
+        },
+        {
+          "slot_id": "SLOT9023",
+          "date": "2026-08-14",
+          "time": "03:30 PM",
+          "status": "available",
+          "bay": "Bay 2"
+        }
+      ]
+    },
+    {
+      "date": "2026-08-15",
+      "day": "Saturday",
+      "working_hours": "09:00 - 17:00",
+      "note": "Independence Day - limited staff, half working hours",
+      "slots": [
+        {
+          "slot_id": "SLOT9024",
+          "date": "2026-08-15",
+          "time": "09:30 AM",
+          "status": "available",
+          "bay": "Bay 1"
+        },
+        {
+          "slot_id": "SLOT9025",
+          "date": "2026-08-15",
+          "time": "11:30 AM",
+          "status": "available",
+          "bay": "Bay 2"
+        }
+      ]
+    },
+    {
+      "date": "2026-08-16",
+      "day": "Sunday",
+      "working_hours": "Closed",
+      "slots": []
+    }
+  ],
+  "bay_info": [
+    {
+      "bay": "Bay 1",
+      "type": "General Service"
+    },
+    {
+      "bay": "Bay 2",
+      "type": "Electrical & AC"
+    },
+    {
+      "bay": "Bay 3",
+      "type": "Body & Paint / Detailing"
+    }
+  ]
+}
