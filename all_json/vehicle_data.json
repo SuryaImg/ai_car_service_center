@@ -1,0 +1,99 @@
+{
+  "vehicles": [
+    {
+      "vehicle_id": "VEH3001",
+      "registration_number": "RJ14CA1234",
+      "customer_id": "CUST2001",
+      "brand": "Skoda",
+      "model": "Rapid",
+      "variant": "Ambition 1.0 TSI",
+      "year": 2021,
+      "fuel_type": "Petrol",
+      "color": "Candy White",
+      "vin": "TMBJH7NW5M1234567",
+      "odometer_km": 42500,
+      "last_service_date": "2026-01-15",
+      "last_service_type": "Standard Service",
+      "warranty_status": "Expired",
+      "amc_active": true
+    },
+    {
+      "vehicle_id": "VEH3002",
+      "registration_number": "RJ14CB5678",
+      "customer_id": "CUST2002",
+      "brand": "Skoda",
+      "model": "Kushaq",
+      "variant": "Style 1.5 TSI AT",
+      "year": 2023,
+      "fuel_type": "Petrol",
+      "color": "Tornado Red",
+      "vin": "TMBJH7NW5N7654321",
+      "odometer_km": 18200,
+      "last_service_date": "2026-05-20",
+      "last_service_type": "Basic Service",
+      "warranty_status": "Active (until 2026-11-30)",
+      "amc_active": false
+    },
+    {
+      "vehicle_id": "VEH3003",
+      "registration_number": "RJ14CC9012",
+      "customer_id": "CUST2003",
+      "brand": "Skoda",
+      "model": "Slavia",
+      "variant": "Ambition 1.0 TSI MT",
+      "year": 2022,
+      "fuel_type": "Petrol",
+      "color": "Steel Grey",
+      "vin": "TMBJH7NW5P9012345",
+      "odometer_km": 31000,
+      "last_service_date": "2025-12-10",
+      "last_service_type": "Major Service",
+      "warranty_status": "Expired",
+      "amc_active": true
+    },
+    {
+      "vehicle_id": "VEH3004",
+      "registration_number": "RJ14CD3456",
+      "customer_id": "CUST2003",
+      "brand": "Skoda",
+      "model": "Kodiaq",
+      "variant": "Style 2.0 TDI 4x4",
+      "year": 2020,
+      "fuel_type": "Diesel",
+      "color": "Magic Black",
+      "vin": "TMBJH7NW5L3456789",
+      "odometer_km": 61200,
+      "last_service_date": "2026-03-02",
+      "last_service_type": "Standard Service",
+      "warranty_status": "Expired",
+      "amc_active": false
+    },
+    {
+      "vehicle_id": "VEH3005",
+      "registration_number": "RJ14CE7890",
+      "customer_id": "CUST2005",
+      "brand": "Skoda",
+      "model": "Superb",
+      "variant": "L&K 2.0 TSI",
+      "year": 2019,
+      "fuel_type": "Petrol",
+      "color": "Quartz Brown",
+      "vin": "TMBJH7NW5K7890123",
+      "odometer_km": 78900,
+      "last_service_date": "2026-06-25",
+      "last_service_type": "Major Service",
+      "warranty_status": "Expired",
+      "amc_active": true
+    }
+  ],
+  "unregistered_vehicle_template": {
+    "note": "Used when lookup_vehicle_by_registration returns no match. Assistant collects these fields from the customer.",
+    "fields_to_collect": [
+      "registration_number",
+      "brand",
+      "model",
+      "variant",
+      "year"
+    ]
+  }
+}

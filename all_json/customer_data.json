@@ -1,0 +1,192 @@
+{
+  "customers": [
+    {
+      "customer_id": "CUST2001",
+      "name": "Rohan Sharma",
+      "phone": "+9196621321",
+      "email": "rohan.sharma@example.com",
+      "address": "B-12, Vaishali Nagar, Jaipur, Rajasthan 302021",
+      "registered_vehicles": [
+        "VEH3001"
+      ],
+      "preferred_language": "Hinglish",
+      "customer_since": "2022-03-14",
+      "loyalty_tier": "Gold",
+      "call_history": [
+        {
+          "timestamp": "2026-07-02T11:15:22+05:30",
+          "call_type": "service_booking",
+          "outcome": "booking_confirmed",
+          "summary": "Booked Basic Service for Rapid."
+        },
+        {
+          "timestamp": "2026-08-10T16:48:45.068241+05:30",
+          "call_type": "service",
+          "outcome": "Booked two services",
+          "summary": "Booked Standard Service for Skoda Rapid on 2026-08-11 at 10:00 AM and Standard Service for a Skoda Kushaq on 2026-08-11 at 9:00 AM.",
+          "notes": [
+            "[2026-08-10T16:42:41.822753+05:30] Loaded vehicle record VEH3001 (Skoda Rapid).",
+            "[2026-08-10T16:44:25.438758+05:30] Booking BOOK7505 created for RJ14CA1234 on 2026-08-11 at 10:00 AM.",
+            "[2026-08-10T16:44:26.143351+05:30] Booking confirmation sent via SMS, WhatsApp, Email to +919680621321.",
+            "[2026-08-10T16:45:00.704966+05:30] No vehicle found for registration: RJ02CA0555",
+            "[2026-08-10T16:45:40.364462+05:30] No vehicle found for registration: RJ02CA8844",
+            "[2026-08-10T16:46:07.928969+05:30] Customer confirmed a Skoda vehicle: Kushaq.",
+            "[2026-08-10T16:48:21.764230+05:30] Booking BOOK7506 created for RJ14CA1234 on 2026-08-11 at 09:00 AM.",
+            "[2026-08-10T16:48:22.548880+05:30] Booking confirmation sent via SMS, WhatsApp, Email to +919680621321.",
+            "[2026-08-10T16:48:45.068241+05:30] Call outcome recorded: Booked two services | Booked Standard Service for Skoda Rapid on 2026-08-11 at 10:00 AM and Standard Service for a Skoda Kushaq on 2026-08-11 at 9:00 AM."
+          ]
+        },
+        {
+          "timestamp": "2026-08-11T11:06:40.015547+05:30",
+          "call_type": "service",
+          "outcome": "Service booking confirmed",
+          "summary": "Customer booked a Standard Service for their Skoda Rapid (RJ14CA1234) on 2026-08-11 at 09:30 AM.",
+          "notes": [
+            "[2026-08-11T11:04:50.361386+05:30] Loaded customer profile for Rohan Sharma.",
+            "[2026-08-11T11:05:19.054795+05:30] Loaded vehicle record VEH3001 (Skoda Rapid).",
+            "[2026-08-11T11:06:24.199338+05:30] Booking BOOK7506 created for RJ14CA1234 on 2026-08-11 at 09:30 AM.",
+            "[2026-08-11T11:06:25.128414+05:30] Booking confirmation sent via SMS & WhatsApp, Email to +919680621321.",
+            "[2026-08-11T11:06:40.015547+05:30] Call outcome recorded: Service booking confirmed | Customer booked a Standard Service for their Skoda Rapid (RJ14CA1234) on 2026-08-11 at 09:30 AM."
+          ]
+        },
+        {
+          "timestamp": "2026-08-11T12:07:12.843474+05:30",
+          "call_type": "service",
+          "outcome": "Service booking confirmed, price query answered.",
+          "summary": "Customer Rohan Sharma booked Periodic Maintenance for Skoda Rapid (RJ14CA1234) on 2026-08-12 at 04:30 PM and had a query about service charges.",
+          "notes": [
+            "[2026-08-11T12:05:12.977370+05:30] Loaded customer profile for Rohan Sharma.",
+            "[2026-08-11T12:06:08.507277+05:30] Loaded vehicle record VEH3001 (Skoda Rapid).",
+            "[2026-08-11T12:06:36.608269+05:30] Booking BOOK7507 created for RJ14CA1234 on 2026-08-12 at 04:30 PM.",
+            "[2026-08-11T12:06:37.386719+05:30] Booking confirmation sent via SMS, WhatsApp, Email to +919680621321.",
+            "[2026-08-11T12:07:12.843474+05:30] Call outcome recorded: Service booking confirmed, price query answered. | Customer Rohan Sharma booked Periodic Maintenance for Skoda Rapid (RJ14CA1234) on 2026-08-12 at 04:30 PM and had a query about service charges."
+          ]
+        },
+        {
+          "timestamp": "2026-08-11T17:09:43.491741+05:30",
+          "call_type": "service",
+          "outcome": "Service booking confirmed",
+          "summary": "Customer Rohan Sharma booked periodic maintenance for his unregistered Skoda Rapid (2022) on 2026-08-12 at 12:30 PM.",
+          "notes": [
+            "[2026-08-11T17:05:12.788505+05:30] Loaded vehicle record VEH3001 (Skoda Rapid).",
+            "[2026-08-11T17:06:10.661997+05:30] Booking BOOK7508 created for RJ14CA1234 on 2026-08-12 at 09:30 AM.",
+            "[2026-08-11T17:06:34.009002+05:30] Call outcome recorded: Service booking confirmed | Customer Rohan Sharma booked periodic maintenance for his Skoda Rapid (RJ14CA1234) on 2026-08-12 at 09:30 AM.",
+            "[2026-08-11T17:06:47.015802+05:30] No vehicle found for registration: RJ14CM1234",
+            "[2026-08-11T17:07:00.673692+05:30] Collecting unregistered vehicle details, still missing: ['model', 'year']",
+            "[2026-08-11T17:07:09.217579+05:30] Collecting unregistered vehicle details, still missing: ['year']",
+            "[2026-08-11T17:07:47.164285+05:30] Unregistered Skoda vehicle fully identified: {'vehicle_id': None, 'registration_number': 'UNREGISTERED', 'brand': 'Skoda', 'model': 'Rapid', 'variant': '', 'year': '2022'}",
+            "[2026-08-11T17:08:32.417183+05:30] Booking BOOK7509 created for UNREGISTERED on 2026-08-12 at 12:30 PM.",
+            "[2026-08-11T17:08:45.141289+05:30] Call outcome recorded: Service booking confirmed | Customer Rohan Sharma booked periodic maintenance for his unregistered Skoda Rapid (2022) on 2026-08-12 at 12:30 PM.",
+            "[2026-08-11T17:08:45.141289+05:30] record_call_outcome called before ask_anything_else confirmation — closing withheld.",
+            "[2026-08-11T17:08:56.008233+05:30] Call outcome recorded: Service booking confirmed | Customer Rohan Sharma booked periodic maintenance for his unregistered Skoda Rapid (2022) on 2026-08-12 at 12:30 PM.",
+            "[2026-08-11T17:08:56.008233+05:30] record_call_outcome called before ask_anything_else confirmation — closing withheld.",
+            "[2026-08-11T17:09:05.117665+05:30] Call outcome recorded: Service booking confirmed | Customer Rohan Sharma booked periodic maintenance for his unregistered Skoda Rapid (2022) on 2026-08-12 at 12:30 PM.",
+            "[2026-08-11T17:09:05.117665+05:30] record_call_outcome called before ask_anything_else confirmation — closing withheld.",
+            "[2026-08-11T17:09:34.468921+05:30] Call outcome recorded: Service booking confirmed | Customer Rohan Sharma booked periodic maintenance for his unregistered Skoda Rapid (2022) on 2026-08-12 at 12:30 PM.",
+            "[2026-08-11T17:09:34.468921+05:30] record_call_outcome called before ask_anything_else confirmation — closing withheld.",
+            "[2026-08-11T17:09:43.491741+05:30] Call outcome recorded: Service booking confirmed | Customer Rohan Sharma booked periodic maintenance for his unregistered Skoda Rapid (2022) on 2026-08-12 at 12:30 PM."
+          ]
+        }
+      ]
+    },
+    {
+      "customer_id": "CUST2002",
+      "name": "Anjali Reddy",
+      "phone": "+918619696832",
+      "email": "anjali.reddy@example.com",
+      "address": "204, Silver Oak Apartments, Malviya Nagar, Jaipur, Rajasthan 302017",
+      "registered_vehicles": [
+        "VEH3002"
+      ],
+      "preferred_language": "English",
+      "customer_since": "2021-11-02",
+      "loyalty_tier": "Silver",
+      "call_history": []
+    },
+    {
+      "customer_id": "CUST2003",
+      "name": "Deepak Verma",
+      "phone": "+919829012345",
+      "email": "deepak.verma@example.com",
+      "address": "45, Shyam Nagar, Jaipur, Rajasthan 302019",
+      "registered_vehicles": [
+        "VEH3003",
+        "VEH3004"
+      ],
+      "preferred_language": "Hindi",
+      "customer_since": "2023-05-19",
+      "loyalty_tier": "Silver",
+      "call_history": [
+        {
+          "timestamp": "2026-06-28T09:40:10+05:30",
+          "call_type": "service_enquiry",
+          "outcome": "no_slot_selected",
+          "summary": "Asked about AC service pricing, did not book."
+        }
+      ]
+    },
+    {
+      "customer_id": "CUST2004",
+      "name": "Priya Nair",
+      "phone": "+919871234567",
+      "email": null,
+      "address": null,
+      "registered_vehicles": [],
+      "preferred_language": "English",
+      "customer_since": null,
+      "loyalty_tier": "New",
+      "call_history": [],
+      "notes": "New / unregistered caller - profile incomplete, needs name, email, address collected on next call."
+    },
+    {
+      "customer_id": "CUST2005",
+      "name": "Karan Mehta",
+      "phone": "+919090909090",
+      "email": "karan.mehta@example.com",
+      "address": "17, Civil Lines, Jaipur, Rajasthan 302006",
+      "registered_vehicles": [
+        "VEH3005"
+      ],
+      "preferred_language": "Hinglish",
+      "customer_since": "2020-01-08",
+      "loyalty_tier": "Platinum",
+      "call_history": []
+    },
+    {
+      "customer_id": "CUST2006",
+      "name": "Heena Khan",
+      "phone": "9681321",
+      "email": "singh_19@gmail.com",
+      "address": "118, Camp, Shivaji Park, Kolhapur",
+      "registered_vehicles": [],
+      "preferred_language": "english",
+      "customer_since": "2026-08-11",
+      "loyalty_tier": "New",
+      "call_history": []
+    },
+    {
+      "customer_id": "CUST2007",
+      "name": "Garima",
+      "phone": "9680613881",
+      "email": "",
+      "address": "",
+      "registered_vehicles": [],
+      "preferred_language": "hinglish",
+      "customer_since": "2026-08-11",
+      "loyalty_tier": "New",
+      "call_history": []
+    },
+    {
+      "customer_id": "CUST2008",
+      "name": "Vikram",
+      "phone": "9680621321",
+      "email": "",
+      "address": "",
+      "registered_vehicles": [],
+      "preferred_language": "hindi",
+      "customer_since": "2026-08-12",
+      "loyalty_tier": "New",
+      "call_history": []
+    }
+  ]
+}

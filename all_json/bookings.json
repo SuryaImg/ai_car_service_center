@@ -1,0 +1,235 @@
+{
+  "bookings": [
+    {
+      "booking_id": "BOOK7001",
+      "customer_id": "CUST2001",
+      "vehicle_id": "VEH3001",
+      "service_ids": [
+        "SVC101"
+      ],
+      "date": "2026-08-10",
+      "time": "10:30 AM",
+      "slot_id": "SLOT9002",
+      "status": "confirmed",
+      "estimated_cost_inr": "2,800",
+      "created_at": "2026-08-05T14:22:10+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": true,
+        "email": false
+      }
+    },
+    {
+      "booking_id": "BOOK7002",
+      "customer_id": "CUST2003",
+      "vehicle_id": "VEH3003",
+      "service_ids": [
+        "SVC302"
+      ],
+      "date": "2026-08-11",
+      "time": "11:30 AM",
+      "slot_id": "SLOT9008",
+      "status": "confirmed",
+      "estimated_cost_inr": "3,200",
+      "created_at": "2026-08-06T09:05:44+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": false,
+        "email": true
+      }
+    },
+    {
+      "booking_id": "BOOK7003",
+      "customer_id": "CUST2002",
+      "vehicle_id": "VEH3002",
+      "service_ids": [
+        "SVC102",
+        "SVC401"
+      ],
+      "date": "2026-08-12",
+      "time": "02:30 PM",
+      "slot_id": "SLOT9014",
+      "status": "confirmed",
+      "estimated_cost_inr": "7,300",
+      "created_at": "2026-08-07T16:40:02+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": true,
+        "email": true
+      }
+    },
+    {
+      "booking_id": "BOOK7004",
+      "customer_id": "CUST2005",
+      "vehicle_id": "VEH3005",
+      "service_ids": [
+        "SVC201",
+        "SVC101"
+      ],
+      "date": "2026-08-14",
+      "time": "11:00 AM",
+      "slot_id": "SLOT9021",
+      "status": "cancelled",
+      "cancellation_reason": "Customer rescheduled to next week",
+      "estimated_cost_inr": "5,500",
+      "created_at": "2026-08-04T11:11:11+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": false,
+        "email": false
+      }
+    },
+    {
+      "booking_id": "BOOK7504",
+      "customer_id": "CUST2001",
+      "vehicle_id": "VEH3001",
+      "service_ids": [
+        "Basic Service"
+      ],
+      "date": "2026-08-10",
+      "time": "09:00 AM",
+      "slot_id": "SLOT9001",
+      "status": "confirmed",
+      "estimated_cost_inr": "As per service catalog",
+      "created_at": "2026-08-10T10:54:01.545117+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": true,
+        "email": true
+      }
+    },
+    {
+      "booking_id": "BOOK7505",
+      "customer_id": "CUST2001",
+      "vehicle_id": "VEH3001",
+      "service_ids": [
+        "SVC102"
+      ],
+      "date": "2026-08-14",
+      "time": "09:00 AM",
+      "slot_id": "SLOT9020",
+      "status": "confirmed",
+      "estimated_cost_inr": "As per service catalog",
+      "created_at": "2026-08-10T16:53:36.910202+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": true,
+        "email": true
+      }
+    },
+    {
+      "booking_id": "BOOK7506",
+      "customer_id": "CUST2001",
+      "vehicle_id": null,
+      "service_ids": [
+        "Engine Diagnostics"
+      ],
+      "date": "2026-08-11",
+      "time": "09:00 AM",
+      "slot_id": "SLOT9006",
+      "status": "confirmed",
+      "estimated_cost_inr": "As per service catalog",
+      "created_at": "2026-08-11T11:11:26.272174+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": true,
+        "email": true
+      }
+    },
+    {
+      "booking_id": "BOOK7507",
+      "customer_id": "CUST2001",
+      "vehicle_id": "VEH3001",
+      "service_ids": [
+        "Periodic Maintenance"
+      ],
+      "date": "2026-08-12",
+      "time": "04:30 PM",
+      "slot_id": "SLOT9015",
+      "status": "confirmed",
+      "estimated_cost_inr": "As per service catalog",
+      "created_at": "2026-08-11T12:06:36.593303+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": true,
+        "email": true
+      }
+    },
+    {
+      "booking_id": "BOOK7508",
+      "customer_id": "CUST2001",
+      "vehicle_id": "VEH3001",
+      "service_ids": [
+        "Periodic Maintenance"
+      ],
+      "date": "2026-08-12",
+      "time": "09:30 AM",
+      "slot_id": "SLOT9011",
+      "status": "confirmed",
+      "estimated_cost_inr": "As per service catalog",
+      "created_at": "2026-08-11T17:06:10.650499+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": true,
+        "email": true
+      }
+    },
+    {
+      "booking_id": "BOOK7509",
+      "customer_id": "CUST2001",
+      "vehicle_id": null,
+      "service_ids": [
+        "Periodic Maintenance"
+      ],
+      "date": "2026-08-12",
+      "time": "12:30 PM",
+      "slot_id": "SLOT9013",
+      "status": "confirmed",
+      "estimated_cost_inr": "As per service catalog",
+      "created_at": "2026-08-11T17:08:32.412198+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": true,
+        "email": true
+      }
+    },
+    {
+      "booking_id": "BOOK7510",
+      "customer_id": "CUST2007",
+      "vehicle_id": null,
+      "service_ids": [
+        "Standard Service"
+      ],
+      "date": "2026-08-12",
+      "time": "11:00 AM",
+      "slot_id": "SLOT9012",
+      "status": "confirmed",
+      "estimated_cost_inr": "As per service catalog",
+      "created_at": "2026-08-11T17:15:09.802930+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": true,
+        "email": false
+      }
+    },
+    {
+      "booking_id": "BOOK7511",
+      "customer_id": "CUST2008",
+      "vehicle_id": null,
+      "service_ids": [
+        "Standard Service"
+      ],
+      "date": "2026-08-13",
+      "time": "03:00 PM",
+      "slot_id": "SLOT9019",
+      "status": "confirmed",
+      "estimated_cost_inr": "As per service catalog",
+      "created_at": "2026-08-12T11:36:50.406872+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": true,
+        "email": false
+      }
+    }
+  ]
+}
