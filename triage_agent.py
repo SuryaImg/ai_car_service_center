@@ -153,20 +153,15 @@ Follow this EXACT conversation flow for every call:
    - After vehicle + customer identification, go DIRECTLY to asking for the customer's preferred appointment date and time (Step 5). Treat every booking as a standard periodic-service appointment unless the customer volunteers a specific symptom/complaint (e.g. AC not cooling, engine noise) — only then use get_symptom_recommendation, and only if they explicitly ask what a service includes should you give ONE short answer via get_service_catalog.
 
 5. DATE & TIME — ASK FIRST, DON'T LIST PROACTIVELY, NEVER AUTO-SUGGEST ALTERNATIVES:
-   - Always ask the customer for their preferred date AND time first (e.g., "Aapko kis date aur time par aana sahi rahega?"). Do not list available slots yet.
+   - Always ask the customer for their preferred date AND time first (e.g., "Aapko kis date aur time par aana sahi rahega?"). Do not list example times yet.
    - If they give a date but no time, ask for their preferred time before checking anything.
-   - Once you have a specific date+time, call get_available_slots with that date AND requested_time set to exactly what the customer said. Do NOT read out the full list of slots — the tool returns exactly one of three outcomes, and its wording tells you precisely what to say:
-     * AVAILABLE: confirm just that one time with the customer.
-     * OUTSIDE WORKING HOURS: tell them clearly this time is outside working hours (state the working hours it returned). Do NOT suggest another time yourself.
-     * WITHIN WORKING HOURS BUT NO SLOT: tell them clearly this time is within working hours but that specific slot isn't available. Do NOT suggest another time yourself.
-   - NEVER change the customer's requested time automatically, and NEVER suggest another time on your own in either "outside hours" or "no slot" case — simply state the fact and then wait. Only offer alternatives (call get_available_slots again without requested_time to get the full list) if the customer explicitly asks for options ("aur koi time?", "kya options hain") or clearly agrees when you ask if they'd like to hear some.
-   - Only read out a full list of open slots if the customer explicitly asks "what slots are available" / "kya options hain" — then call get_available_slots for the relevant date (no requested_time) and share the options.
-   - If the customer has no date preference ("koi bhi date", "any date is fine"): first check if today (per current IST time) still has working hours and available slots remaining — call get_available_slots with today's date. If nothing remains today, move to the next available future date and offer its earliest slot.
-   - WORKING HOURS vs. AVAILABLE SLOTS — THESE ARE TWO DIFFERENT THINGS, NEVER CONFUSE THEM:
-     * "Workshop working hours" (e.g. 09:00 AM - 06:00 PM) is when the workshop is open. "Available appointment slots" are the specific bookable times within those hours — get_available_slots reports both, separately, every time.
-     * A time can be INSIDE working hours but still have NO appointment slot available at that exact time. That is a slot-availability gap, NOT the workshop closing early — never say "workshop is only open till X" when X is actually just the last available slot.
-     * Before creating a booking, both working hours AND actual slot availability must hold — create_service_booking itself validates both and will refuse (with the specific reason) if either fails, so always trust and relay its actual refusal reason rather than guessing.
-     * Never state a different closing time for different dates unless get_available_slots' working_hours value actually differs for that date — always read the exact working_hours it returns rather than assuming or recalling from a previous date's answer.
+   - Once you have a specific date+time, call get_available_slots with that date AND requested_time set to exactly what the customer said. This is a DEMO — there is no slot-capacity or "already booked" concept at all; ANY future date/time within working hours is bookable. The tool returns exactly one of three outcomes, and its wording tells you precisely what to say:
+     * VALID FUTURE BOOKING: confirm just that one time with the customer and proceed.
+     * OUTSIDE WORKING HOURS: tell them clearly this time is outside working hours (state the working hours it returned — 09:00 AM-06:00 PM). Do NOT suggest another time yourself.
+     * PAST: tell them clearly this time has already passed. Do NOT suggest another time yourself.
+   - NEVER change the customer's requested time automatically, and NEVER suggest another time on your own in either case — simply state the fact and then wait. Only offer alternatives (call get_available_slots again without requested_time) if the customer explicitly asks for options ("aur koi time?", "kya options hain") or clearly agrees when you ask if they'd like to hear some. Any suggestions given are illustrative examples only, not a restricted list — the customer can still choose any other future in-hours time.
+   - If the customer has no date preference ("koi bhi date", "any date is fine"): check if today (per current IST time) still has working hours remaining (before 06:00 PM) — if so, today is fine; if not, move to tomorrow.
+   - WORKING HOURS RULE (DEMO — SIMPLE AND FIXED): Monday through Sunday, 09:00 AM to 06:00 PM, inclusive on both ends (so exactly 06:00 PM is a valid, bookable time). There are NO special days — no Saturday/Sunday/holiday exceptions of any kind. Never say a date has different hours than another date; the rule never changes.
    - AM/PM PRECISION: be exact — 12:00 AM = midnight (start of day), 12:00 PM = noon (midday), 12:30 AM = 00:30, 12:30 PM = 12:30. Never guess if ambiguous; ask the customer to clarify (e.g. "raat 12 baje" vs "dopeher 12 baje").
 
 6. BOOKING SUMMARY & CONFIRMATION:
@@ -360,7 +355,8 @@ def _persist_outcome_and_clear(data: dict, call_state: CallState, user_id: str):
 
 def _build_realtime_session(instructions: str, userdata: dict) -> AgentSession:
     realtime_model = RealtimeModel(
-        model="gemini-live-2.5-flash-native-audio",
+        model="gemini-3.1-flash-live-preview",
+        vertexai=False,
         voice="Vindemiatrix",
         temperature=0.6,
         instructions=instructions,
@@ -476,10 +472,13 @@ async def _run_inbound_call(ctx: agents.JobContext, db_data: dict):
     if customer_name:
         greeting = (
             "This is an INBOUND call. Caller's phone matched an existing customer — use their name "
-            "naturally for personalization, but do NOT mention or assume any specific vehicle yet.\n\n"
+            "naturally for personalization, but do NOT mention or assume any specific vehicle yet, "
+            "and do NOT ask what service they need.\n\n"
             f"Warmly greet them first in HINGLISH/HINDI as Lily, representing {SERVICE_CENTER_NAME}, "
-            f"using their name ({customer_name}). Then ask which vehicle and what service they need "
-            "today — do not assume it's their registered vehicle until they confirm."
+            f"using their name ({customer_name}). Then ask which vehicle they're calling about today "
+            "— do not assume it's their registered vehicle until they confirm. Example: 'Namaste "
+            f"{customer_name} ji! Main aapki gaadi ke liye appointment book karne mein help kar sakti "
+            "hoon. Aap kis gaadi ke liye call kar rahe hain?'"
         )
     else:
         greeting = (
