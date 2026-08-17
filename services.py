@@ -12,7 +12,7 @@ common.py for the matching prompt-side removal.
 import json
 import logging
 import os
-from datetime import datetime, time as dt_time
+from datetime import datetime
 from typing import Optional
 
 from livekit.agents import RunContext, function_tool
@@ -22,18 +22,12 @@ from common import CallState, now_ist, today_ist_str, IST, cancel_stale_confirma
 logger = logging.getLogger("services")
 
 # ---------------------------------------------------------------------------
-# IST-based past/future slot handling.
-#
-# FIX (booking-horizon restriction removed): the static workshop_calendar in
-# slots.json only lists a handful of concrete dates (e.g. Aug 10-16). Dates
-# beyond that used to be flatly refused ("No slots found for date ... 
-# Available workshop dates are: ..."), which blocked customers from booking
-# any genuinely future date. That refusal is removed — a date is now only
-# rejected if it is actually in the past (IST). Any valid future date not
-# yet in the static calendar gets a generated standard-hours day instead of
-# being refused outright (see _generate_template_day / _STANDARD_SLOT_TEMPLATE
-# below). Sundays remain closed (matches the existing "Closed" days in the
-# calendar, e.g. 2026-08-16).
+# DEMO working-hours rule (single source of truth):
+#   Monday through Sunday, 09:00 AM - 06:00 PM inclusive.
+#   No per-day exceptions (no Saturday/Sunday/holiday/half-day logic).
+#   The ONLY availability restriction is past date/time (IST). There is NO
+#   slot-capacity / bay-occupancy / "already booked" checking in this demo —
+#   any future in-hours date/time is accepted.
 # ---------------------------------------------------------------------------
 
 _WORKSHOP_WORKING_HOURS = "09:00 AM - 06:00 PM"
@@ -52,11 +46,31 @@ def _parse_time_of_day(time_str: str):
     return None
 
 
+def _normalize_time_for_compare(time_str: str) -> str:
+    """
+    Normalize a time string for equality comparisons so harmless formatting
+    differences ('9:00 AM' vs '09:00 AM', extra spaces, case) never cause a
+    false anti-hallucination mismatch. Falls back to a simple
+    lowercased/stripped string if it can't be parsed as a time at all.
+    """
+    parsed = _parse_time_of_day(time_str)
+    if parsed is None:
+        return " ".join((time_str or "").strip().lower().split())
+    return parsed.strftime("%I:%M %p")
+
+
+def _normalize_text_for_compare(text: str) -> str:
+    """Normalize free text (service names/ids, etc.) for tolerant comparison — collapses whitespace, lowercases."""
+    return " ".join((text or "").strip().lower().split())
+
+
 def _is_within_working_hours(time_str: str) -> Optional[bool]:
     """
-    True if time_str falls within [_WORKSHOP_OPEN_TIME_STR, _WORKSHOP_CLOSE_TIME_STR],
-    False if outside, None if time_str couldn't be parsed at all (caller should
-    ask the customer to clarify rather than assume either way).
+    True if time_str falls within [09:00 AM, 06:00 PM] INCLUSIVE (so exactly
+    06:00 PM is accepted), False if outside, None if time_str couldn't be
+    parsed at all (caller should ask the customer to clarify rather than
+    assume either way). Same rule every day — Monday through Sunday, no
+    exceptions.
     """
     t = _parse_time_of_day(time_str)
     if t is None:
@@ -66,15 +80,11 @@ def _is_within_working_hours(time_str: str) -> Optional[bool]:
     return open_t <= t <= close_t
 
 
-# FIX (workshop-hours vs. available-slots conflation): this template used to
-# stop at "03:30 PM" while _generate_template_day() below still labelled the
-# day "working_hours": "09:00 - 18:00" — so every single future date beyond
-# the static slots.json calendar silently had ZERO bookable slots for the
-# last 2.5 hours of its stated working hours, and the agent (with no
-# instruction telling it these are two different things) started announcing
-# "3:30 PM tak hi open hai" as if that were the actual closing time. Slots
-# now extend up to 05:00 PM (still one hour before the 06:00 PM close, so a
-# ~60-90 min job can realistically finish before closing).
+# DEMO/REFERENCE DATA ONLY — NOT a whitelist of allowed booking times and NOT
+# used for any availability/rejection decision. It exists purely so
+# get_available_slots has some example times to show a customer who asks for
+# "options" without naming an exact time. Booking validation is based solely
+# on _is_within_working_hours() + past-date/time checks, below.
 _STANDARD_SLOT_TEMPLATE = [
     ("09:00 AM", "Bay 1"),
     ("10:30 AM", "Bay 2"),
@@ -97,9 +107,9 @@ def _parse_slot_datetime(date_str: str, time_str: str):
 
 def _is_past_slot(date_str: str, time_str: str) -> bool:
     """
-    True if this date+time slot is strictly in the past relative to the
-    current IST time. Only PAST slots/dates are ever rejected — there is no
-    upper bound on how far in the future a slot may be.
+    True if this date+time is strictly in the past relative to the current
+    IST time. This is the ONLY availability restriction in the demo besides
+    working hours — no slot-capacity checking exists.
     """
     dt = _parse_slot_datetime(date_str, time_str)
     if dt is None:
@@ -114,35 +124,6 @@ def _is_past_date(date_str: str) -> bool:
     except ValueError:
         return False
     return target < now_ist().date()
-
-
-def _generate_template_day(date_str: str) -> Optional[dict]:
-    """
-    Build a standard-hours day (Mon-Sat, 09:00-18:00, the 5 template slot
-    times) for a future date that isn't in the static workshop_calendar.
-    Returns None for Sundays (closed) or unparsable dates.
-    """
-    try:
-        target = datetime.strptime(date_str.strip(), "%Y-%m-%d").date()
-    except ValueError:
-        return None
-    weekday_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    day_name = weekday_names[target.weekday()]
-    if target.weekday() == 6:  # Sunday
-        return {"date": date_str, "day": day_name, "working_hours": "Closed", "slots": []}
-
-    slots = []
-    for idx, (time_str, bay) in enumerate(_STANDARD_SLOT_TEMPLATE, start=1):
-        if _is_past_slot(date_str, time_str):
-            continue
-        slots.append({
-            "slot_id": f"SLOT-GEN-{date_str.replace('-', '')}-{idx}",
-            "date": date_str,
-            "time": time_str,
-            "status": "available",
-            "bay": bay,
-        })
-    return {"date": date_str, "day": day_name, "working_hours": _WORKSHOP_WORKING_HOURS, "slots": slots}
 
 # ---------------------------------------------------------------------------
 # Data paths & loading (formerly services/data_service.py)
@@ -447,8 +428,9 @@ async def lookup_customer_by_phone(ctx: RunContext, phone: str = "") -> str:
             f"vehicle being serviced today): {listed}"
         )
     response += (
-        "\nGreet the customer by name for personalization, then ask which vehicle and what "
-        "service they need — do not assume it's one of the vehicles listed above until they say so."
+        "\nGreet the customer by name for personalization, then ask which vehicle they're calling "
+        "about — do not assume it's one of the vehicles listed above until they say so. Do NOT ask "
+        "what service they need."
     )
     return response
 
@@ -687,16 +669,16 @@ async def get_symptom_recommendation(ctx: RunContext, symptom_description: str) 
 @function_tool
 async def get_available_slots(ctx: RunContext, date: str = "", requested_time: str = "") -> str:
     """
-    Check available time slots for service appointments. Only PAST dates/times
-    (relative to IST now) are ever excluded — there is no restriction on how
-    far in the future a date may be; dates beyond the static workshop
-    calendar get a standard-hours day generated for them (Sundays closed).
+    Check whether a requested date/time is bookable under the DEMO rule:
+    Monday-Sunday, 09:00 AM-06:00 PM inclusive, and not in the past (IST).
+    There is NO slot-capacity/bay-occupancy checking in this demo — any
+    future in-hours date/time is valid.
     Args:
-        date: Preferred date in YYYY-MM-DD format (or leave empty for all upcoming dates).
+        date: Preferred date in YYYY-MM-DD format.
         requested_time: If the customer named ONE specific time (e.g. '6 PM', '9:30 AM'),
-            pass it here to get back a precise classification: OUTSIDE working hours,
-            WITHIN working hours but no slot, or AVAILABLE. Leave blank to just list
-            everything open that day.
+            pass it here to get back a precise classification: PAST, OUTSIDE
+            WORKING HOURS, or VALID FUTURE BOOKING. Leave blank to just see
+            example times for the day (illustrative only, not exhaustive).
     """
     state: CallState = ctx.userdata["call_state"]
     cancel_stale_confirmation(state)
@@ -707,160 +689,83 @@ async def get_available_slots(ctx: RunContext, date: str = "", requested_time: s
         )
     if not state.vehicle_record:
         return (
-            "The vehicle has not been identified yet this call. Do NOT offer or list slots "
-            "yet — first call lookup_vehicle_by_registration or collect_unregistered_vehicle_details "
-            "to identify the vehicle (Steps 1-2 of the flow), then come back to slots."
+            "The vehicle has not been identified yet this call. Do NOT offer or discuss "
+            "date/time yet — first call lookup_vehicle_by_registration or "
+            "collect_unregistered_vehicle_details to identify the vehicle (Steps 1-2 of the "
+            "flow), then come back to date/time."
         )
 
-    data = ctx.userdata["db_data"]
-    calendar = data.get("workshop_calendar", [])
-
-    if date:
-        date_clean = date.strip()
-        if _is_past_date(date_clean):
-            return (
-                f"'{date_clean}' has already passed (today is {today_ist_str()} IST). "
-                "Ask the customer for a future date instead — never book or offer a past date."
-            )
-
-        day = next((d for d in calendar if d.get("date") == date_clean), None)
-        if day is None:
-            # Not in the static calendar — generate a standard-hours day for
-            # it instead of refusing (booking-horizon restriction removed).
-            day = _generate_template_day(date_clean)
-            if day is None:
-                return f"'{date_clean}' is not a valid date. Please use YYYY-MM-DD format."
-
-        if day.get("working_hours") == "Closed":
-            return f"{date_clean} ({day.get('day')}) — the workshop is closed that day. Ask the customer to choose another date."
-
-        available_slots = [
-            s for s in day.get("slots", [])
-            if s.get("status") == "available" and not _is_past_slot(date_clean, s.get("time", ""))
-        ]
-
-        # FIX (doc section 8 — code-enforced, not left to the model to infer):
-        # when the customer named ONE specific time, classify it precisely
-        # instead of just dumping the day's slot list and hoping the model
-        # reasons it out correctly (that's exactly how the "3:30 PM tak hi
-        # open hai" bug happened). Three, and only three, outcomes:
-        #   1. OUTSIDE working hours entirely.
-        #   2. WITHIN working hours but that exact slot isn't open.
-        #   3. AVAILABLE.
-        # Per doc rule: do NOT proactively suggest alternatives here — only
-        # state the fact. Alternatives are offered only if the customer then
-        # asks for them or agrees to hear options.
-        if requested_time.strip():
-            req_norm = requested_time.strip()
-            within_hours = _is_within_working_hours(req_norm)
-            req_time_obj = _parse_time_of_day(req_norm)
-
-            matching_slot = None
-            if req_time_obj is not None:
-                for s in available_slots:
-                    if _parse_time_of_day(s.get("time", "")) == req_time_obj:
-                        matching_slot = s
-                        break
-
-            if within_hours is None:
-                return (
-                    f"Could not parse the requested time '{requested_time}'. Ask the customer to state "
-                    "it clearly (e.g. '6 PM', '9:30 AM') before checking availability again."
-                )
-            if not within_hours:
-                return (
-                    f"OUTSIDE WORKING HOURS: '{req_norm}' on {date_clean} is outside the workshop's "
-                    f"working hours ({day.get('working_hours')}). Tell the customer clearly that this "
-                    f"time is outside working hours (workshop hours: {day.get('working_hours')}), and "
-                    "do NOT book it. Do NOT proactively suggest another time — wait for the customer to "
-                    "either give a new time themselves or explicitly ask for available options."
-                )
-            if matching_slot is not None:
-                return (
-                    f"AVAILABLE: '{req_norm}' on {date_clean} is within working hours "
-                    f"({day.get('working_hours')}) and IS available [ID: {matching_slot.get('slot_id')}, "
-                    f"{matching_slot.get('bay')}]. Confirm just this one time with the customer."
-                )
-            return (
-                f"WITHIN WORKING HOURS BUT NO SLOT: '{req_norm}' on {date_clean} is within the "
-                f"workshop's working hours ({day.get('working_hours')}), but that specific appointment "
-                "slot is not available (already booked or does not exist). Tell the customer exactly "
-                "this — that the time is within working hours but that specific slot isn't available. "
-                "Do NOT proactively suggest another time — wait for the customer to either give a new "
-                "time themselves or explicitly ask for available options."
-            )
-
-        # FIX: workshop working hours and available appointment slots are
-        # reported as two SEPARATE facts, never merged into one line — a
-        # date can be within working hours with no slot left at that exact
-        # time, and that is NOT the same as the workshop being closed.
-        if not available_slots:
-            return (
-                f"Workshop working hours for {date_clean} ({day.get('day')}): {day.get('working_hours')}.\n"
-                f"No available APPOINTMENT SLOTS remain for {date_clean} — either fully booked or all "
-                "remaining slot times have already passed today. This does NOT mean the workshop is "
-                "closed early; do not tell the customer the workshop closes earlier than its actual "
-                "working hours. Ask for another date."
-            )
-
-        lines = [
-            f"Workshop working hours for {date_clean} ({day.get('day')}): {day.get('working_hours')}.",
-            f"Available APPOINTMENT SLOTS within those hours for {date_clean}:",
-        ]
-        for s in available_slots:
-            lines.append(f"   * {s.get('time')} [ID: {s.get('slot_id')}, {s.get('bay')}]")
-        lines.append(
-            "Note: the workshop stays open for the full working hours above even if the last listed "
-            "slot is earlier than closing time — that gap just means no appointment slot exists there, "
-            "NOT that the workshop closes then. Never state the last available slot time as the "
-            "workshop's closing time."
-        )
-        return "\n".join(lines)
-
-    # No date given: show the near-term static calendar (past-day slots for
-    # "today" filtered out), same as before.
-    res_lines = ["Available Appointment Slots:"]
-    found_any = False
-
-    for day in calendar:
-        d_str = day.get("date")
-        day_name = day.get("day")
-        hours = day.get("working_hours")
-        note = f" ({day.get('note')})" if day.get("note") else ""
-
-        if _is_past_date(d_str):
-            continue
-        if hours == "Closed":
-            res_lines.append(f"\n- {d_str} ({day_name}): CLOSED")
-            continue
-
-        available_slots = [
-            s for s in day.get("slots", [])
-            if s.get("status") == "available" and not _is_past_slot(d_str, s.get("time", ""))
-        ]
-        if available_slots:
-            found_any = True
-            res_lines.append(f"\n- {d_str} ({day_name}, {hours}){note}:")
-            for s in available_slots:
-                res_lines.append(f"   * {s.get('time')} [ID: {s.get('slot_id')}, {s.get('bay')}]")
-        else:
-            res_lines.append(f"\n- {d_str} ({day_name}): All slots fully booked or already passed today")
-
-    if not found_any:
+    if not date.strip():
         return (
-            "No available slots found in the near-term calendar. Ask the customer for a specific "
-            "future date — any future date is bookable, it will just use standard workshop hours."
+            f"Workshop working hours: {_WORKSHOP_WORKING_HOURS}, Monday through Sunday — no "
+            "special days. Ask the customer for a specific date to check, or a specific "
+            "date+time to validate directly."
         )
 
-    res_lines.append(
-        f"\nNote: workshop working hours are {_WORKSHOP_WORKING_HOURS} every day except Sundays "
-        "(closed). Any later date the customer prefers is also bookable, with standard slot times "
-        "(09:00 AM, 10:30 AM, 12:00 PM, 02:00 PM, 03:30 PM, 04:00 PM, 05:00 PM) — just call "
-        "get_available_slots again with that exact date. If the last available slot for a date is "
-        "earlier than closing time, that's just a slot gap, NOT an early closing — never say the "
-        "workshop 'closes' at the last available slot time."
+    date_clean = date.strip()
+    if _is_past_date(date_clean):
+        return (
+            f"'{date_clean}' has already passed (today is {today_ist_str()} IST). "
+            "Ask the customer for a future date instead — never book or offer a past date."
+        )
+
+    if requested_time.strip():
+        req_norm = requested_time.strip()
+        within_hours = _is_within_working_hours(req_norm)
+
+        if within_hours is None:
+            return (
+                f"Could not parse the requested time '{requested_time}'. Ask the customer to state "
+                "it clearly (e.g. '6 PM', '9:30 AM') before checking again."
+            )
+        if not within_hours:
+            return (
+                f"OUTSIDE WORKING HOURS: '{req_norm}' on {date_clean} is outside the workshop's "
+                f"working hours ({_WORKSHOP_WORKING_HOURS}). Tell the customer clearly that this "
+                "time is outside working hours, and do NOT book it. Do NOT proactively suggest "
+                "another time — wait for the customer to either give a new time themselves or "
+                "explicitly ask for options."
+            )
+        if _is_past_slot(date_clean, req_norm):
+            return (
+                f"PAST: '{req_norm}' on {date_clean} has already passed (today is "
+                f"{today_ist_str()} IST). Tell the customer this time has already passed and ask "
+                "for a future date/time. Do NOT proactively suggest a specific alternative — wait "
+                "for the customer to give a new time or ask for options."
+            )
+        return (
+            f"VALID FUTURE BOOKING: '{req_norm}' on {date_clean} is within working hours "
+            f"({_WORKSHOP_WORKING_HOURS}) and is in the future. Confirm just this one time with "
+            "the customer — proceed to generate_booking_summary."
+        )
+
+    # No specific time given — customer wants to browse. There is no fixed
+    # slot list in this demo; show a few illustrative example times only.
+    # _STANDARD_SLOT_TEMPLATE is DEMO/REFERENCE DATA ONLY — it is NOT the
+    # full set of bookable times. Any time within working hours works.
+    example_times = [
+        t for t, _ in _STANDARD_SLOT_TEMPLATE
+        if not _is_past_slot(date_clean, t)
+    ]
+    lines = [
+        f"Workshop working hours for {date_clean}: {_WORKSHOP_WORKING_HOURS} (Monday-Sunday, no "
+        "special days).",
+    ]
+    if example_times:
+        lines.append(
+            "Example times (illustrative only — ANY time within working hours is bookable, the "
+            f"customer is not limited to these): {', '.join(example_times)}."
+        )
+    else:
+        lines.append(
+            "All the illustrative example times for today have already passed, but any future "
+            f"time up to {_WORKSHOP_CLOSE_TIME_STR} today is still bookable."
+        )
+    lines.append(
+        "Ask the customer for their exact preferred time and call get_available_slots again with "
+        "requested_time set to validate it — do not restrict them to the example times above."
     )
-    return "\n".join(res_lines)
+    return "\n".join(lines)
 
 
 @function_tool
@@ -971,6 +876,10 @@ async def create_service_booking(
     # the model's own text alone. state.booking_draft is set exclusively by
     # generate_booking_summary, so its absence, or a mismatch against what's
     # being booked now, means no real, read-back summary happened yet.
+    # Comparison is NORMALIZED (harmless formatting differences like
+    # '9:00 AM' vs '09:00 AM', extra whitespace, or capitalization do NOT
+    # count as a mismatch) — but a genuinely different date/time/service
+    # still correctly invalidates the old confirmation.
     draft = state.booking_draft
     if not draft or "service_names_or_ids" not in draft:
         return (
@@ -981,8 +890,8 @@ async def create_service_booking(
         )
     if (
         draft.get("date", "").strip() != date.strip()
-        or draft.get("time", "").strip().lower() != time_slot.strip().lower()
-        or draft.get("service_names_or_ids", "").strip().lower() != service_names_or_ids.strip().lower()
+        or _normalize_time_for_compare(draft.get("time", "")) != _normalize_time_for_compare(time_slot)
+        or _normalize_text_for_compare(draft.get("service_names_or_ids", "")) != _normalize_text_for_compare(service_names_or_ids)
     ):
         return (
             "REFUSED: these date/time/service values do not match the summary last read back to the "
@@ -991,17 +900,20 @@ async def create_service_booking(
         )
 
     # FIX (IST-based past-slot guard): never create a booking for a
-    # date/time that has already passed, regardless of which path (static
-    # calendar or generated standard-hours day) it came from.
+    # date/time that has already passed. This is the ONLY availability
+    # restriction in this demo besides working hours — preserved as-is.
     if _is_past_date(date.strip()):
         return f"REFUSED: {date.strip()} has already passed (today is {today_ist_str()} IST). Ask for a future date."
     if _is_past_slot(date.strip(), time_slot.strip()):
         return f"REFUSED: {time_slot.strip()} on {date.strip()} has already passed (IST). Ask the customer to pick a future time."
 
-    # FIX (doc section 8 — validate against WORKING HOURS explicitly, not
-    # just the slot list): a time outside working hours must be refused
-    # with that specific reason, distinct from "within hours but no slot".
+    # DEMO RULE: working hours are Monday-Sunday, 09:00 AM-06:00 PM
+    # inclusive, with NO per-day exceptions. This is the only other
+    # restriction — there is NO slot-capacity/bay-occupancy/"already
+    # booked" check in this demo. Any future in-hours date/time is valid.
     within_hours = _is_within_working_hours(time_slot.strip())
+    if within_hours is None:
+        return f"REFUSED: '{time_slot}' could not be parsed as a time. Ask the customer to state it clearly (e.g. '6 PM', '9:30 AM')."
     if within_hours is False:
         return (
             f"REFUSED (OUTSIDE WORKING HOURS): '{time_slot.strip()}' on {date.strip()} is outside the "
@@ -1009,40 +921,8 @@ async def create_service_booking(
             "outside working hours and cannot be booked."
         )
 
-    target_slot = None
-    for day in data.get("workshop_calendar", []):
-        if day.get("date") == date.strip():
-            for slot in day.get("slots", []):
-                if slot.get("time", "").lower() == time_slot.strip().lower() or slot.get("slot_id") == time_slot.strip():
-                    target_slot = slot
-                    break
-
-    if target_slot and target_slot.get("status") != "available":
-        return f"Slot '{time_slot}' on {date} is no longer available (status: {target_slot.get('status')}). Please select another slot."
-
-    if target_slot is None:
-        # Date/time isn't in the static calendar — only allow it if it's a
-        # valid generated standard-hours slot (weekday, not Sunday, and one
-        # of the standard template times), matching what get_available_slots
-        # would have offered. This stops the agent from inventing an
-        # arbitrary time that was never actually presented as available.
-        try:
-            target_weekday = datetime.strptime(date.strip(), "%Y-%m-%d").weekday()
-        except ValueError:
-            return f"REFUSED: '{date}' is not a valid date (expected YYYY-MM-DD)."
-        if target_weekday == 6:
-            return f"REFUSED: {date.strip()} is a Sunday — the workshop is closed. Ask for another date."
-        valid_times = {t.lower() for t, _ in _STANDARD_SLOT_TEMPLATE}
-        if time_slot.strip().lower() not in valid_times:
-            return (
-                f"REFUSED (WITHIN WORKING HOURS BUT NO SLOT): '{time_slot}' is within working hours "
-                f"({_WORKSHOP_WORKING_HOURS}) but was never offered as an available slot for "
-                f"{date.strip()} via get_available_slots. Call get_available_slots with that date and "
-                "requested_time first, and only book a time it actually confirms as AVAILABLE."
-            )
-
     booking_id = f"BOOK7{len(data.get('bookings', [])) + 500:03d}"
-    slot_id = target_slot.get("slot_id") if target_slot else f"SLOT-GEN-{date.strip().replace('-', '')}-{time_slot.strip().replace(' ', '').replace(':', '')}"
+    slot_id = f"SLOT-{date.strip().replace('-', '')}-{time_slot.strip().replace(' ', '').replace(':', '')}"
 
     booking_entry = {
         "booking_id": booking_id,
@@ -1060,11 +940,6 @@ async def create_service_booking(
 
     data.setdefault("bookings", []).append(booking_entry)
     persist_bookings(data)
-
-    if target_slot:
-        target_slot["status"] = "booked"
-        target_slot["booking_id"] = booking_id
-        persist_slots(data)
 
     state.booking_draft = booking_entry
     state.log(f"Booking {booking_id} created for {veh.get('registration_number')} on {date} at {time_slot}.")
@@ -1091,13 +966,28 @@ async def send_booking_confirmation(
     state: CallState = ctx.userdata["call_state"]
     cancel_stale_confirmation(state)
     cust = state.customer_record
+
+    # FIX (critical NameError — `phone` was referenced below but never
+    # assigned anywhere in this function, so this call crashed on every
+    # single successful booking). `phone` MUST come from state.customer_record
+    # — the customer loaded for THIS call — never from anywhere else, so a
+    # confirmation is never sent to the wrong person.
+    if not cust:
+        state.log("send_booking_confirmation called with no customer loaded — cannot send.")
+        return (
+            "Cannot send confirmation: no customer profile is loaded for this call. This should "
+            "not happen after a successful create_service_booking — treat this as an error and let "
+            "the customer know their booking is saved but confirmation could not be sent right now."
+        )
+
+    phone = cust.get("phone", "")
     email = cust.get("email") if cust else None
 
     channels_sent = [c.strip() for c in channels.split(",")]
     if email:
         channels_sent.append("Email")
 
-    state.log(f"Booking confirmation sent via {', '.join(channels_sent)} to {phone}.")
+    state.log(f"Booking confirmation sent via {', '.join(channels_sent)} to {phone} (customer_id={cust.get('customer_id')}).")
 
     return (
         f"Booking confirmation message sent successfully to {phone} via {', '.join(channels_sent)}. "

@@ -230,6 +230,63 @@
         "whatsapp": true,
         "email": false
       }
+    },
+    {
+      "booking_id": "BOOK7512",
+      "customer_id": "CUST2002",
+      "vehicle_id": null,
+      "service_ids": [
+        "Standard Service"
+      ],
+      "date": "2026-08-13",
+      "time": "05:00 PM",
+      "slot_id": "SLOT-20260813-0500PM",
+      "status": "confirmed",
+      "estimated_cost_inr": "As per service catalog",
+      "created_at": "2026-08-13T16:29:01.935926+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": true,
+        "email": true
+      }
+    },
+    {
+      "booking_id": "BOOK7513",
+      "customer_id": "CUST2009",
+      "vehicle_id": null,
+      "service_ids": [
+        "Periodic Maintenance"
+      ],
+      "date": "2026-09-06",
+      "time": "06:00 PM",
+      "slot_id": "SLOT-20260906-0600PM",
+      "status": "confirmed",
+      "estimated_cost_inr": "As per service catalog",
+      "created_at": "2026-08-17T17:37:08.458911+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": true,
+        "email": false
+      }
+    },
+    {
+      "booking_id": "BOOK7514",
+      "customer_id": "CUST2009",
+      "vehicle_id": null,
+      "service_ids": [
+        "Periodic Service"
+      ],
+      "date": "2026-08-18",
+      "time": "04:00 PM",
+      "slot_id": "SLOT-20260818-0400PM",
+      "status": "confirmed",
+      "estimated_cost_inr": "As per service catalog",
+      "created_at": "2026-08-17T17:41:53.682824+05:30",
+      "confirmation_sent": {
+        "sms": true,
+        "whatsapp": true,
+        "email": false
+      }
     }
   ]
 }

@@ -92,7 +92,7 @@
     {
       "customer_id": "CUST2002",
       "name": "Anjali Reddy",
-      "phone": "+918619696832",
+      "phone": "+9186832",
       "email": "anjali.reddy@example.com",
       "address": "204, Silver Oak Apartments, Malviya Nagar, Jaipur, Rajasthan 302017",
       "registered_vehicles": [
@@ -179,7 +179,7 @@
     {
       "customer_id": "CUST2008",
       "name": "Vikram",
-      "phone": "9680621321",
+      "phone": "9680613881",
       "email": "",
       "address": "",
       "registered_vehicles": [],
@@ -187,6 +187,34 @@
       "customer_since": "2026-08-12",
       "loyalty_tier": "New",
       "call_history": []
+    },
+    {
+      "customer_id": "CUST2009",
+      "name": "Vandana",
+      "phone": "07013008161",
+      "email": "",
+      "address": "",
+      "registered_vehicles": [],
+      "preferred_language": "hindi",
+      "customer_since": "2026-08-17",
+      "loyalty_tier": "New",
+      "call_history": [
+        {
+          "timestamp": "2026-08-17T17:42:24.373053+05:30",
+          "call_type": "service",
+          "outcome": "Booking completed successfully",
+          "summary": "Customer Vandana booked a service for their Skoda Slavia (2004) on 2026-08-18 at 04:00 PM. Booking ID BOOK7514. Confirmation sent.",
+          "notes": [
+            "[2026-08-17T17:40:27.682440+05:30] No vehicle found for registration: PYCA1222",
+            "[2026-08-17T17:40:52.704450+05:30] Unregistered Skoda vehicle fully identified: {'vehicle_id': None, 'registration_number': 'UNREGISTERED', 'brand': 'Skoda', 'model': 'Slavia', 'variant': '', 'year': '2004'}",
+            "[2026-08-17T17:41:53.686814+05:30] Booking BOOK7514 created for UNREGISTERED on 2026-08-18 at 04:00 PM.",
+            "[2026-08-17T17:41:53.688866+05:30] Booking confirmation sent via SMS, WhatsApp, Email to 07013008161 (customer_id=CUST2009).",
+            "[2026-08-17T17:42:24.373053+05:30] Call outcome recorded: Booking completed successfully | Customer Vandana booked a service for their Skoda Slavia (2004) on 2026-08-18 at 04:00 PM. Booking ID BOOK7514. Confirmation sent."
+          ]
+        }
+      ]
     }
   ]
 }
+
+
